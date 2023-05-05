@@ -23,7 +23,7 @@ jobs:
         run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
         id: branch
       - name: Create tag string
-        run: echo "::set-output name=tag::${{ steps.date.outputs.date }}/${{ steps.branch.outputs.branch }}"
+        run: echo "::set-output name=tag::${{ steps.date.outputs.date }}-${{ steps.branch.outputs.branch }}"
         id: tag
       - name: Delete tag if exists
         run: |
@@ -31,7 +31,7 @@ jobs:
             git tag -d ${{ steps.tag.outputs.tag }}
             git push --delete origin ${{ steps.tag.outputs.tag }}
           fi
-      - name: Tag commit with YY-MM-DD/branchname
+      - name: Tag commit with YY-MM-DD-branchname
         run: |
           git tag ${{ steps.tag.outputs.tag }}
           git push --tags --force 
