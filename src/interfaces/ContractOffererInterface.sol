@@ -1,18 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-import {
-    ReceivedItem,
-    Schema,
-    SpentItem
-} from "../lib/ConsiderationStructs.sol";
+import {ReceivedItem, Schema, SpentItem} from "../lib/ConsiderationStructs.sol";
+import {IERC165} from "../interfaces/IERC165.sol";
 
 /**
  * @title ContractOffererInterface
  * @notice Contains the minimum interfaces needed to interact with a contract
  *         offerer.
  */
-interface ContractOffererInterface {
+interface ContractOffererInterface is IERC165 {
     /**
      * @dev Generates an order with the specified minimum and maximum spent
      *      items, and optional context (supplied as extraData).
@@ -31,9 +28,7 @@ interface ContractOffererInterface {
         SpentItem[] calldata minimumReceived,
         SpentItem[] calldata maximumSpent,
         bytes calldata context // encoded based on the schemaID
-    )
-        external
-        returns (SpentItem[] memory offer, ReceivedItem[] memory consideration);
+    ) external returns (SpentItem[] memory offer, ReceivedItem[] memory consideration);
 
     /**
      * @dev Ratifies an order with the specified offer, consideration, and
@@ -78,10 +73,7 @@ interface ContractOffererInterface {
         SpentItem[] calldata minimumReceived,
         SpentItem[] calldata maximumSpent,
         bytes calldata context // encoded based on the schemaID
-    )
-        external
-        view
-        returns (SpentItem[] memory offer, ReceivedItem[] memory consideration);
+    ) external view returns (SpentItem[] memory offer, ReceivedItem[] memory consideration);
 
     /**
      * @dev Gets the metadata for this contract offerer.
@@ -89,13 +81,9 @@ interface ContractOffererInterface {
      * @return name    The name of the contract offerer.
      * @return schemas The schemas supported by the contract offerer.
      */
-    function getSeaportMetadata()
-        external
-        view
-        returns (
-            string memory name,
-            Schema[] memory schemas // map to Seaport Improvement Proposal IDs
-        );
+    function getSeaportMetadata() external view returns (string memory name, Schema[] memory schemas); // map to Seaport Improvement Proposal IDs
+
+    function supportsInterface(bytes4 interfaceId) external view override returns (bool);
 
     // Additional functions and/or events based on implemented schemaIDs
 }
