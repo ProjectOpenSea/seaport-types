@@ -1,0 +1,15 @@
+{
+  "name": "seaport-types",
+  "version": "0.0.1",
+  "description": "Core types and interfaces for Seaport",
+  "main": "src/",
+  "repository": "https://github.com/ProjectOpenSea/seaport-types.git",
+  "author": "OpenSea",
+  "license": "MIT",
+  "files": [
+    "package.json",
+    "src",
+    "LICENSE",
+    "README.md"
+  ]
+}
