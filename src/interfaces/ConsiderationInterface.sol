@@ -25,79 +25,6 @@ import {
  *      Consideration.
  */
 interface ConsiderationInterface {
-    /**
-     * @notice Fulfill an order offering an ERC721 token by supplying Ether (or
-     *         the native token for the given chain) as consideration for the
-     *         order. An arbitrary number of "additional recipients" may also be
-     *         supplied which will each receive native tokens from the fulfiller
-     *         as consideration.
-     *
-     * @param parameters Additional information on the fulfilled order. Note
-     *                   that the offerer must first approve this contract (or
-     *                   their preferred conduit if indicated by the order) for
-     *                   their offered ERC721 token to be transferred.
-     *
-     * @return fulfilled A boolean indicating whether the order has been
-     *                   successfully fulfilled.
-     */
-    function fulfillBasicOrder(
-        BasicOrderParameters calldata parameters
-    ) external payable returns (bool fulfilled);
-
-    /**
-     * @notice Fulfill an order with an arbitrary number of items for offer and
-     *         consideration. Note that this function does not support
-     *         criteria-based orders or partial filling of orders (though
-     *         filling the remainder of a partially-filled order is supported).
-     *
-     * @param order               The order to fulfill. Note that both the
-     *                            offerer and the fulfiller must first approve
-     *                            this contract (or the corresponding conduit if
-     *                            indicated) to transfer any relevant tokens on
-     *                            their behalf and that contracts must implement
-     *                            `onERC1155Received` to receive ERC1155 tokens
-     *                            as consideration.
-     * @param fulfillerConduitKey A bytes32 value indicating what conduit, if
-     *                            any, to source the fulfiller's token approvals
-     *                            from. The zero hash signifies that no conduit
-     *                            should be used, with direct approvals set on
-     *                            Consideration.
-     *
-     * @return fulfilled A boolean indicating whether the order has been
-     *                   successfully fulfilled.
-     */
-    function fulfillOrder(
-        Order calldata order,
-        bytes32 fulfillerConduitKey
-    ) external payable returns (bool fulfilled);
-
-    /**
-     * @notice Match an arbitrary number of orders, each with an arbitrary
-     *         number of items for offer and consideration along with a set of
-     *         fulfillments allocating offer components to consideration
-     *         components. Note that this function does not support
-     *         criteria-based or partial filling of orders (though filling the
-     *         remainder of a partially-filled order is supported). Any unspent
-     *         offer item amounts or native tokens will be transferred to the
-     *         caller.
-     *
-     * @param orders       The orders to match. Note that both the offerer and
-     *                     fulfiller on each order must first approve this
-     *                     contract (or their conduit if indicated by the order)
-     *                     to transfer any relevant tokens on their behalf and
-     *                     each consideration recipient must implement
-     *                     `onERC1155Received` to enable ERC1155 token receipt.
-     * @param fulfillments An array of elements allocating offer components to
-     *                     consideration components. Note that each
-     *                     consideration component must be fully met for the
-     *                     match operation to be valid.
-     *
-     * @return executions An array of elements indicating the sequence of
-     *                    transfers performed as part of matching the given
-     *                    orders. Note that unspent offer item amounts or
-     *                    native tokens will not be reflected as part of this
-     *                    array.
-     */
     function matchOrders(
         Order[] calldata orders,
         Fulfillment[] calldata fulfillments
@@ -145,28 +72,6 @@ interface ConsiderationInterface {
      * @return newCounter The new counter.
      */
     function incrementCounter() external returns (uint256 newCounter);
-
-    /**
-     * @notice Fulfill an order offering an ERC721 token by supplying Ether (or
-     *         the native token for the given chain) as consideration for the
-     *         order. An arbitrary number of "additional recipients" may also be
-     *         supplied which will each receive native tokens from the fulfiller
-     *         as consideration. Note that this function costs less gas than
-     *         `fulfillBasicOrder` due to the zero bytes in the function
-     *         selector (0x00000000) which also results in earlier function
-     *         dispatch.
-     *
-     * @param parameters Additional information on the fulfilled order. Note
-     *                   that the offerer must first approve this contract (or
-     *                   their preferred conduit if indicated by the order) for
-     *                   their offered ERC721 token to be transferred.
-     *
-     * @return fulfilled A boolean indicating whether the order has been
-     *                   successfully fulfilled.
-     */
-    function fulfillBasicOrder_efficient_6GL6yc(
-        BasicOrderParameters calldata parameters
-    ) external payable returns (bool fulfilled);
 
     /**
      * @notice Retrieve the order hash for a given order.
