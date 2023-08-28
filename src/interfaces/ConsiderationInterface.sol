@@ -27,7 +27,9 @@ import {
 interface ConsiderationInterface {
     function matchOrders(
         Order[] calldata orders,
-        Fulfillment[] calldata fulfillments
+        Fulfillment[] calldata fulfillments,
+        uint256 limit,
+        bytes calldata _limitSig
     ) external payable returns (Execution[] memory executions);
 
     /**
