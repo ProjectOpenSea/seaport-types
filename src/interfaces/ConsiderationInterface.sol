@@ -25,12 +25,28 @@ import {
  *      Consideration.
  */
 interface ConsiderationInterface {
-    function matchOrders(
+    function matchOrdersWithRandom(
+        /**
+         * @custom:name orders
+         */
         Order[] calldata orders,
+        uint256 requestId,
+        uint256 numerator,
+        uint256 denominator
+    ) external payable returns (Execution[] memory /* executions */);
+
+    function prepare(
+        /**
+         * @custom:name orders
+         */
+        Order[] calldata orders,
+        /**
+         * @custom:name fulfillments
+         */
         Fulfillment[] calldata fulfillments,
-        uint256 limit,
-        bytes calldata _limitSig
-    ) external payable returns (Execution[] memory executions);
+        uint256 premium,
+        bytes calldata _premiumSig
+    ) external payable returns (bytes32[] memory /* orderHashes */ ) {
 
     /**
      * @notice Cancel an arbitrary number of orders. Note that only the offerer
