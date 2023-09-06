@@ -46,7 +46,7 @@ interface ConsiderationInterface {
         Fulfillment[] calldata fulfillments,
         uint256 premium,
         bytes calldata _premiumSig
-    ) external payable returns (bytes32[] memory /* orderHashes */ ) {
+    ) external payable returns (bytes32[] memory /* orderHashes */ );
 
     /**
      * @notice Cancel an arbitrary number of orders. Note that only the offerer
