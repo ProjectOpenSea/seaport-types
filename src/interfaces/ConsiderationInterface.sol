@@ -9,7 +9,8 @@ import {
     Fulfillment,
     FulfillmentComponent,
     Order,
-    OrderComponents
+    OrderComponents,
+    OrderProbility
 } from "../lib/ConsiderationStructs.sol";
 
 /**
@@ -29,10 +30,13 @@ interface ConsiderationInterface {
         /**
          * @custom:name orders
          */
-        Order[] calldata orders,
+        Order[] calldata,
+        /**
+         * @custom:name fulfillments
+         */
+        Fulfillment[] calldata,
         uint256 requestId,
-        uint256 numerator,
-        uint256 denominator
+        OrderProbility[] calldata orderProbility
     ) external payable returns (Execution[] memory /* executions */);
 
     function prepare(
@@ -40,12 +44,9 @@ interface ConsiderationInterface {
          * @custom:name orders
          */
         Order[] calldata orders,
-        /**
-         * @custom:name fulfillments
-         */
-        Fulfillment[] calldata fulfillments,
-        uint256 premium,
-        bytes calldata _premiumSig
+        uint256[] calldata premiumOrdersIndex,
+        address[] calldata recipients,
+        uint32 numWords
     ) external payable returns (bytes32[] memory /* orderHashes */ );
 
     /**
