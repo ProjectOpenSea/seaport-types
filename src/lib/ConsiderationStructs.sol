@@ -275,6 +275,12 @@ struct Schema {
     bytes metadata;
 }
 
+
+struct OrderProbility {
+    bytes32 orderHash;
+    uint256 numerator;
+    uint256 denominator;
+}
 using StructPointers for OrderComponents global;
 using StructPointers for OfferItem global;
 using StructPointers for ConsiderationItem global;
