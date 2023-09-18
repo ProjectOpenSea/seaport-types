@@ -47,7 +47,7 @@ interface ConsiderationInterface {
         uint256[] calldata premiumOrdersIndex,
         address[] calldata recipients,
         uint32 numWords
-    ) external payable returns (bytes32[] memory /* orderHashes */ );
+    ) external payable returns (uint256);
 
     /**
      * @notice Cancel an arbitrary number of orders. Note that only the offerer
