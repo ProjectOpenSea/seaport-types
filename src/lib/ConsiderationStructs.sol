@@ -281,6 +281,12 @@ struct OrderProbility {
     uint256 numerator;
     uint256 denominator;
 }
+
+struct LastMatchStatus {
+    uint120 numerator;
+    uint120 denominator;
+}
+
 using StructPointers for OrderComponents global;
 using StructPointers for OfferItem global;
 using StructPointers for ConsiderationItem global;
