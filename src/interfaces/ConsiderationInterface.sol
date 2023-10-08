@@ -30,7 +30,7 @@ interface ConsiderationInterface {
         /**
          * @custom:name orders
          */
-        AdvancedOrder[] calldata,
+        Order[] calldata,
         /**
          * @custom:name fulfillments
          */
@@ -43,7 +43,7 @@ interface ConsiderationInterface {
         /**
          * @custom:name orders
          */
-        AdvancedOrder[] calldata orders,
+        Order[] calldata orders,
         uint256[] calldata premiumOrdersIndex,
         address[] calldata recipients,
         uint32 numWords
