@@ -49,9 +49,9 @@ uint256 constant information_versionLengthPtr = 0x63;
 uint256 constant information_versionWithLength = 0x03312e35; // 1.5
 uint256 constant information_length = 0xa0;
 
-uint256 constant _NOT_ENTERED = 1;
-uint256 constant _ENTERED = 2;
-uint256 constant _ENTERED_AND_ACCEPTING_NATIVE_TOKENS = 3;
+uint256 constant _NOT_ENTERED = 0;
+uint256 constant _ENTERED = 1;
+uint256 constant _ENTERED_AND_ACCEPTING_NATIVE_TOKENS = 2;
 
 uint256 constant Offset_fulfillAdvancedOrder_criteriaResolvers = 0x20;
 uint256 constant Offset_fulfillAvailableOrders_offerFulfillments = 0x20;
