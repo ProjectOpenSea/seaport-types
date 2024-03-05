@@ -46,21 +46,25 @@ uint256 constant information_version_cd_offset = 0x60;
 uint256 constant information_domainSeparator_offset = 0x20;
 uint256 constant information_conduitController_offset = 0x40;
 uint256 constant information_versionLengthPtr = 0x63;
-uint256 constant information_versionWithLength = 0x03312e35; // 1.5
+uint256 constant information_versionWithLength = 0x03312e36; // 1.6
 uint256 constant information_length = 0xa0;
 
-uint256 constant _NOT_ENTERED = 1;
-uint256 constant _ENTERED = 2;
-uint256 constant _ENTERED_AND_ACCEPTING_NATIVE_TOKENS = 3;
+uint256 constant _REENTRANCY_GUARD_SLOT = 0x929eee14;
+uint256 constant _TSTORE_SUPPORTED_SLOT = 0x54778ab1;
+uint256 constant _TLOAD_TEST_PAYLOAD = 0x6002601e613d5c3d52f3;
+uint256 constant _TLOAD_TEST_PAYLOAD_LENGTH = 0x0a;
+uint256 constant _TLOAD_TEST_PAYLOAD_OFFSET = 0x16;
+uint256 constant _NOT_ENTERED = 0;
+uint256 constant _ENTERED = 1;
+uint256 constant _ENTERED_AND_ACCEPTING_NATIVE_TOKENS = 2;
 
 uint256 constant Offset_fulfillAdvancedOrder_criteriaResolvers = 0x20;
 uint256 constant Offset_fulfillAvailableOrders_offerFulfillments = 0x20;
 uint256 constant Offset_fulfillAvailableOrders_considerationFulfillments = 0x40;
 uint256 constant Offset_fulfillAvailableAdvancedOrders_criteriaResolvers = 0x20;
 uint256 constant Offset_fulfillAvailableAdvancedOrders_offerFulfillments = 0x40;
-uint256 constant Offset_fulfillAvailableAdvancedOrders_cnsdrationFlflmnts = (
-    0x60
-);
+uint256 constant Offset_fulfillAvailableAdvancedOrders_cnsdrationFlflmnts =
+    (0x60);
 
 uint256 constant Offset_matchOrders_fulfillments = 0x20;
 
@@ -82,7 +86,7 @@ uint256 constant SpentItem_size = 0x80;
 uint256 constant SpentItem_size_shift = 0x7;
 
 uint256 constant OfferItem_size = 0xa0;
-uint256 constant OfferItem_size_with_length = 0xc0;
+uint256 constant OfferItem_size_with_head_pointer = 0xc0;
 
 uint256 constant ReceivedItem_size_excluding_recipient = 0x80;
 uint256 constant ReceivedItem_size = 0xa0;
@@ -92,7 +96,7 @@ uint256 constant ReceivedItem_recipient_offset = 0x80;
 uint256 constant ReceivedItem_CommonParams_size = 0x60;
 
 uint256 constant ConsiderationItem_size = 0xc0;
-uint256 constant ConsiderationItem_size_with_length = 0xe0;
+uint256 constant ConsiderationItem_size_with_head_pointer = 0xe0;
 
 uint256 constant ConsiderationItem_recipient_offset = 0xa0;
 // Store the same constant in an abbreviated format for a line length fix.
@@ -109,7 +113,7 @@ uint256 constant OrderParameters_consideration_head_offset = 0x60;
 uint256 constant OrderParameters_startTime_offset = 0xa0;
 uint256 constant OrderParameters_endTime_offset = 0xc0;
 uint256 constant OrderParameters_zoneHash_offset = 0xe0;
-// uint256 constant OrderParameters_salt_offset = 0x100;
+uint256 constant OrderParameters_salt_offset = 0x100;
 uint256 constant OrderParameters_conduit_offset = 0x120;
 uint256 constant OrderParameters_counter_offset = 0x140;
 
@@ -124,6 +128,9 @@ uint256 constant AdvancedOrder_extraData_offset = 0x80;
 uint256 constant OrderStatus_ValidatedAndNotCancelled = 1;
 uint256 constant OrderStatus_filledNumerator_offset = 0x10;
 uint256 constant OrderStatus_filledDenominator_offset = 0x88;
+uint256 constant OrderStatus_ValidatedAndNotCancelledAndFullyFilled = (
+    0x0000000000000000000000000000010000000000000000000000000000010001
+);
 
 uint256 constant ThirtyOneBytes = 0x1f;
 uint256 constant OneWord = 0x20;
@@ -145,19 +152,16 @@ uint256 constant DefaultFreeMemoryPointer = 0x80;
 uint256 constant Slot0x80 = 0x80;
 uint256 constant Slot0xA0 = 0xa0;
 
-// uint256 constant BasicOrder_endAmount_cdPtr = 0x104;
 uint256 constant BasicOrder_common_params_size = 0xa0;
 uint256 constant BasicOrder_considerationHashesArray_ptr = 0x160;
-uint256 constant BasicOrder_receivedItemByteMap = (
-    0x0000010102030000000000000000000000000000000000000000000000000000
-);
-uint256 constant BasicOrder_offeredItemByteMap = (
-    0x0203020301010000000000000000000000000000000000000000000000000000
-);
+uint256 constant BasicOrder_receivedItemByteMap =
+    (0x0000010102030000000000000000000000000000000000000000000000000000);
+uint256 constant BasicOrder_offeredItemByteMap =
+    (0x0203020301010000000000000000000000000000000000000000000000000000);
+uint256 constant BasicOrder_consideration_offset_from_offer = 0xa0;
 
-bytes32 constant OrdersMatchedTopic0 = (
-    0x4b9f2d36e1b4c93de62cc077b00b1a91d84b6c31b4a14e012718dcca230689e7
-);
+bytes32 constant OrdersMatchedTopic0 =
+    (0x4b9f2d36e1b4c93de62cc077b00b1a91d84b6c31b4a14e012718dcca230689e7);
 
 uint256 constant EIP712_Order_size = 0x180;
 uint256 constant EIP712_OfferItem_size = 0xc0;
@@ -186,78 +190,54 @@ uint256 constant BulkOrderProof_lengthRangeAfterMask = 0x2;
 uint256 constant BulkOrderProof_keyShift = 0xe8;
 uint256 constant BulkOrderProof_keySize = 0x3;
 
-uint256 constant BulkOrder_Typehash_Height_One = (
-    0x3ca2711d29384747a8f61d60aad3c450405f7aaff5613541dee28df2d6986d32
-);
-uint256 constant BulkOrder_Typehash_Height_Two = (
-    0xbf8e29b89f29ed9b529c154a63038ffca562f8d7cd1e2545dda53a1b582dde30
-);
-uint256 constant BulkOrder_Typehash_Height_Three = (
-    0x53c6f6856e13104584dd0797ca2b2779202dc2597c6066a42e0d8fe990b0024d
-);
-uint256 constant BulkOrder_Typehash_Height_Four = (
-    0xa02eb7ff164c884e5e2c336dc85f81c6a93329d8e9adf214b32729b894de2af1
-);
-uint256 constant BulkOrder_Typehash_Height_Five = (
-    0x39c9d33c18e050dda0aeb9a8086fb16fc12d5d64536780e1da7405a800b0b9f6
-);
-uint256 constant BulkOrder_Typehash_Height_Six = (
-    0x1c19f71958cdd8f081b4c31f7caf5c010b29d12950be2fa1c95070dc47e30b55
-);
-uint256 constant BulkOrder_Typehash_Height_Seven = (
-    0xca74fab2fece9a1d58234a274220ad05ca096a92ef6a1ca1750b9d90c948955c
-);
-uint256 constant BulkOrder_Typehash_Height_Eight = (
-    0x7ff98d9d4e55d876c5cfac10b43c04039522f3ddfb0ea9bfe70c68cfb5c7cc14
-);
-uint256 constant BulkOrder_Typehash_Height_Nine = (
-    0xbed7be92d41c56f9e59ac7a6272185299b815ddfabc3f25deb51fe55fe2f9e8a
-);
-uint256 constant BulkOrder_Typehash_Height_Ten = (
-    0xd1d97d1ef5eaa37a4ee5fbf234e6f6d64eb511eb562221cd7edfbdde0848da05
-);
-uint256 constant BulkOrder_Typehash_Height_Eleven = (
-    0x896c3f349c4da741c19b37fec49ed2e44d738e775a21d9c9860a69d67a3dae53
-);
-uint256 constant BulkOrder_Typehash_Height_Twelve = (
-    0xbb98d87cc12922b83759626c5f07d72266da9702d19ffad6a514c73a89002f5f
-);
-uint256 constant BulkOrder_Typehash_Height_Thirteen = (
-    0xe6ae19322608dd1f8a8d56aab48ed9c28be489b689f4b6c91268563efc85f20e
-);
-uint256 constant BulkOrder_Typehash_Height_Fourteen = (
-    0x6b5b04cbae4fcb1a9d78e7b2dfc51a36933d023cf6e347e03d517b472a852590
-);
-uint256 constant BulkOrder_Typehash_Height_Fifteen = (
-    0xd1eb68309202b7106b891e109739dbbd334a1817fe5d6202c939e75cf5e35ca9
-);
-uint256 constant BulkOrder_Typehash_Height_Sixteen = (
-    0x1da3eed3ecef6ebaa6e5023c057ec2c75150693fd0dac5c90f4a142f9879fde8
-);
-uint256 constant BulkOrder_Typehash_Height_Seventeen = (
-    0xeee9a1392aa395c7002308119a58f2582777a75e54e0c1d5d5437bd2e8bf6222
-);
-uint256 constant BulkOrder_Typehash_Height_Eighteen = (
-    0xc3939feff011e53ab8c35ca3370aad54c5df1fc2938cd62543174fa6e7d85877
-);
-uint256 constant BulkOrder_Typehash_Height_Nineteen = (
-    0x0efca7572ac20f5ae84db0e2940674f7eca0a4726fa1060ffc2d18cef54b203d
-);
-uint256 constant BulkOrder_Typehash_Height_Twenty = (
-    0x5a4f867d3d458dabecad65f6201ceeaba0096df2d0c491cc32e6ea4e64350017
-);
-uint256 constant BulkOrder_Typehash_Height_TwentyOne = (
-    0x80987079d291feebf21c2230e69add0f283cee0b8be492ca8050b4185a2ff719
-);
-uint256 constant BulkOrder_Typehash_Height_TwentyTwo = (
-    0x3bd8cff538aba49a9c374c806d277181e9651624b3e31111bc0624574f8bca1d
-);
-uint256 constant BulkOrder_Typehash_Height_TwentyThree = (
-    0x5d6a3f098a0bc373f808c619b1bb4028208721b3c4f8d6bc8a874d659814eb76
-);
-uint256 constant BulkOrder_Typehash_Height_TwentyFour = (
-    0x1d51df90cba8de7637ca3e8fe1e3511d1dc2f23487d05dbdecb781860c21ac1c
-);
+uint256 constant BulkOrder_Typehash_Height_One =
+    (0x3ca2711d29384747a8f61d60aad3c450405f7aaff5613541dee28df2d6986d32);
+uint256 constant BulkOrder_Typehash_Height_Two =
+    (0xbf8e29b89f29ed9b529c154a63038ffca562f8d7cd1e2545dda53a1b582dde30);
+uint256 constant BulkOrder_Typehash_Height_Three =
+    (0x53c6f6856e13104584dd0797ca2b2779202dc2597c6066a42e0d8fe990b0024d);
+uint256 constant BulkOrder_Typehash_Height_Four =
+    (0xa02eb7ff164c884e5e2c336dc85f81c6a93329d8e9adf214b32729b894de2af1);
+uint256 constant BulkOrder_Typehash_Height_Five =
+    (0x39c9d33c18e050dda0aeb9a8086fb16fc12d5d64536780e1da7405a800b0b9f6);
+uint256 constant BulkOrder_Typehash_Height_Six =
+    (0x1c19f71958cdd8f081b4c31f7caf5c010b29d12950be2fa1c95070dc47e30b55);
+uint256 constant BulkOrder_Typehash_Height_Seven =
+    (0xca74fab2fece9a1d58234a274220ad05ca096a92ef6a1ca1750b9d90c948955c);
+uint256 constant BulkOrder_Typehash_Height_Eight =
+    (0x7ff98d9d4e55d876c5cfac10b43c04039522f3ddfb0ea9bfe70c68cfb5c7cc14);
+uint256 constant BulkOrder_Typehash_Height_Nine =
+    (0xbed7be92d41c56f9e59ac7a6272185299b815ddfabc3f25deb51fe55fe2f9e8a);
+uint256 constant BulkOrder_Typehash_Height_Ten =
+    (0xd1d97d1ef5eaa37a4ee5fbf234e6f6d64eb511eb562221cd7edfbdde0848da05);
+uint256 constant BulkOrder_Typehash_Height_Eleven =
+    (0x896c3f349c4da741c19b37fec49ed2e44d738e775a21d9c9860a69d67a3dae53);
+uint256 constant BulkOrder_Typehash_Height_Twelve =
+    (0xbb98d87cc12922b83759626c5f07d72266da9702d19ffad6a514c73a89002f5f);
+uint256 constant BulkOrder_Typehash_Height_Thirteen =
+    (0xe6ae19322608dd1f8a8d56aab48ed9c28be489b689f4b6c91268563efc85f20e);
+uint256 constant BulkOrder_Typehash_Height_Fourteen =
+    (0x6b5b04cbae4fcb1a9d78e7b2dfc51a36933d023cf6e347e03d517b472a852590);
+uint256 constant BulkOrder_Typehash_Height_Fifteen =
+    (0xd1eb68309202b7106b891e109739dbbd334a1817fe5d6202c939e75cf5e35ca9);
+uint256 constant BulkOrder_Typehash_Height_Sixteen =
+    (0x1da3eed3ecef6ebaa6e5023c057ec2c75150693fd0dac5c90f4a142f9879fde8);
+uint256 constant BulkOrder_Typehash_Height_Seventeen =
+    (0xeee9a1392aa395c7002308119a58f2582777a75e54e0c1d5d5437bd2e8bf6222);
+uint256 constant BulkOrder_Typehash_Height_Eighteen =
+    (0xc3939feff011e53ab8c35ca3370aad54c5df1fc2938cd62543174fa6e7d85877);
+uint256 constant BulkOrder_Typehash_Height_Nineteen =
+    (0x0efca7572ac20f5ae84db0e2940674f7eca0a4726fa1060ffc2d18cef54b203d);
+uint256 constant BulkOrder_Typehash_Height_Twenty =
+    (0x5a4f867d3d458dabecad65f6201ceeaba0096df2d0c491cc32e6ea4e64350017);
+uint256 constant BulkOrder_Typehash_Height_TwentyOne =
+    (0x80987079d291feebf21c2230e69add0f283cee0b8be492ca8050b4185a2ff719);
+uint256 constant BulkOrder_Typehash_Height_TwentyTwo =
+    (0x3bd8cff538aba49a9c374c806d277181e9651624b3e31111bc0624574f8bca1d);
+uint256 constant BulkOrder_Typehash_Height_TwentyThree =
+    (0x5d6a3f098a0bc373f808c619b1bb4028208721b3c4f8d6bc8a874d659814eb76);
+uint256 constant BulkOrder_Typehash_Height_TwentyFour =
+    (0x1d51df90cba8de7637ca3e8fe1e3511d1dc2f23487d05dbdecb781860c21ac1c);
 
 uint256 constant receivedItemsHash_ptr = 0x60;
 
@@ -298,9 +278,8 @@ uint256 constant receivedItemsHash_ptr = 0x60;
 // Must be added to the size of the ReceivedItem array for additionalRecipients
 // (0xa0 * additionalRecipients.length) to calculate full size of the buffer.
 uint256 constant OrderFulfilled_baseSize = 0x1e0;
-uint256 constant OrderFulfilled_selector = (
-    0x9d9af8e38d66c62e2c12f0225249fd9d721c54b83f48d9352c97c6cacdcb6f31
-);
+uint256 constant OrderFulfilled_selector =
+    (0x9d9af8e38d66c62e2c12f0225249fd9d721c54b83f48d9352c97c6cacdcb6f31);
 
 // Minimum offset in memory to OrderFulfilled event data.
 // Must be added to the size of the EIP712 hash array for additionalRecipients
@@ -308,6 +287,10 @@ uint256 constant OrderFulfilled_selector = (
 uint256 constant OrderFulfilled_baseOffset = 0x180;
 uint256 constant OrderFulfilled_consideration_length_baseOffset = 0x2a0;
 uint256 constant OrderFulfilled_offer_length_baseOffset = 0x200;
+
+uint256 constant OrderFulfilled_offer_length_baseOffset_relativeTo_OrderFulfilled_baseOffset = 0x80;
+uint256 constant OrderFulfilled_offer_itemType_baseOffset_relativeTo_OrderFulfilled_baseOffset = 0xa0;
+uint256 constant OrderFulfilled_offer_token_baseOffset_relativeTo_OrderFulfilled_baseOffset = 0xc0;
 
 // Related constants used for restricted order checks on basic orders.
 uint256 constant OrderFulfilled_baseDataSize = 0x160;
@@ -321,6 +304,40 @@ uint256 constant OrderFulfilled_offer_body_offset = 0x80;
 uint256 constant OrderFulfilled_consideration_head_offset = 0x60;
 uint256 constant OrderFulfilled_consideration_body_offset = 0x120;
 
+/*
+ * 3 memory slots/words for `authorizeOrder` and `validateOrder` calldata
+ * to be used for tails of extra data (length 0) and order hashes (length 1)
+ */
+uint256 constant OrderFulfilled_post_memory_region_reservedBytes = 0x60; 
+
+/*
+ * OrderFulfilled_offer_length_baseOffset - 12 * 0x20
+ * we back up 12 words from where the `OrderFulfilled`'s data
+ * for spent items start to be rewritten for `authorizeOrder`
+ * and `validateOrder`. Let the reference pointer be `ptr`
+ * pointing to the `OrderFulfilled`'s spent item array's length memory
+ * position then we would have:
+ *
+ * ptr - 0x0180 : zero-padded calldata selector
+ * ptr - 0x0160 : ZoneParameter's struct head (0x20)
+ * ptr - 0x0140 : order hash
+ * ptr - 0x0120 : fulfiller (msg.sender)
+ * ptr - 0x0100 : offerer 
+ * ptr - 0x00e0 : spent items' head
+ * ptr - 0x00c0 : received items' head 
+ * ptr - 0x00a0 : extra data / context head
+ * ptr - 0x0080 : order hashes head
+ * ptr - 0x0060 : start time
+ * ptr - 0x0040 : end time
+ * ptr - 0x0020 : zone hash
+ * ptr - 0x0000 : offer.length (1)
+ * ...
+ *
+ * Note that the padded calldata selector will be at minimum at the
+ * 0x80 memory slot.
+ */
+uint256 constant authorizeOrder_calldata_baseOffset = OrderFulfilled_offer_length_baseOffset - 0x180;
+
 // BasicOrderParameters
 uint256 constant BasicOrder_parameters_cdPtr = 0x04;
 uint256 constant BasicOrder_considerationToken_cdPtr = 0x24;
@@ -331,6 +348,7 @@ uint256 constant BasicOrder_zone_cdPtr = 0xa4;
 uint256 constant BasicOrder_offerToken_cdPtr = 0xc4;
 uint256 constant BasicOrder_offerIdentifier_cdPtr = 0xe4;
 uint256 constant BasicOrder_offerAmount_cdPtr = 0x104;
+uint256 constant BasicOrder_basicOrderParameters_cd_offset = 0x24;
 uint256 constant BasicOrder_basicOrderType_cdPtr = 0x124;
 uint256 constant BasicOrder_startTime_cdPtr = 0x144;
 uint256 constant BasicOrder_endTime_cdPtr = 0x164;
@@ -342,6 +360,7 @@ uint256 constant BasicOrder_totalOriginalAdditionalRecipients_cdPtr = 0x204;
 uint256 constant BasicOrder_additionalRecipients_head_cdPtr = 0x224;
 uint256 constant BasicOrder_signature_cdPtr = 0x244;
 uint256 constant BasicOrder_additionalRecipients_length_cdPtr = 0x264;
+uint256 constant BasicOrder_addlRecipients_length_cdPtr = 0x264;
 uint256 constant BasicOrder_additionalRecipients_data_cdPtr = 0x284;
 uint256 constant BasicOrder_parameters_ptr = 0x20;
 uint256 constant BasicOrder_basicOrderType_range = 0x18; // 24 values
@@ -419,27 +438,23 @@ uint256 constant ContractOrder_orderHash_offerer_shift = 0x60;
 uint256 constant Counter_blockhash_shift = 0x80;
 
 // Signature-related
-bytes32 constant EIP2098_allButHighestBitMask = (
-    0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
-);
-bytes32 constant ECDSA_twentySeventhAndTwentyEighthBytesSet = (
-    0x0000000000000000000000000000000000000000000000000000000101000000
-);
+bytes32 constant EIP2098_allButHighestBitMask =
+    (0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff);
+bytes32 constant ECDSA_twentySeventhAndTwentyEighthBytesSet =
+    (0x0000000000000000000000000000000000000000000000000000000101000000);
 uint256 constant ECDSA_MaxLength = 65;
 uint256 constant ECDSA_signature_s_offset = 0x40;
 uint256 constant ECDSA_signature_v_offset = 0x60;
 
-bytes32 constant EIP1271_isValidSignature_selector = (
-    0x1626ba7e00000000000000000000000000000000000000000000000000000000
-);
+bytes32 constant EIP1271_isValidSignature_selector =
+    (0x1626ba7e00000000000000000000000000000000000000000000000000000000);
 uint256 constant EIP1271_isValidSignature_digest_negativeOffset = 0x40;
 uint256 constant EIP1271_isValidSignature_selector_negativeOffset = 0x44;
 uint256 constant EIP1271_isValidSignature_calldata_baseLength = 0x64;
 uint256 constant EIP1271_isValidSignature_signature_head_offset = 0x40;
 
-uint256 constant EIP_712_PREFIX = (
-    0x1901000000000000000000000000000000000000000000000000000000000000
-);
+uint256 constant EIP_712_PREFIX =
+    (0x1901000000000000000000000000000000000000000000000000000000000000);
 
 uint256 constant ExtraGasBuffer = 0x20;
 uint256 constant CostPerWord = 0x3;
@@ -448,22 +463,17 @@ uint256 constant MemoryExpansionCoefficientShift = 0x9;
 uint256 constant Create2AddressDerivation_ptr = 0x0b;
 uint256 constant Create2AddressDerivation_length = 0x55;
 
-uint256 constant MaskOverByteTwelve = (
-    0x0000000000000000000000ff0000000000000000000000000000000000000000
-);
-uint256 constant MaskOverLastTwentyBytes = (
-    0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff
-);
-uint256 constant AddressDirtyUpperBitThreshold = (
-    0x0000000000000000000000010000000000000000000000000000000000000000
-);
-uint256 constant MaskOverFirstFourBytes = (
-    0xffffffff00000000000000000000000000000000000000000000000000000000
-);
+uint256 constant MaskOverByteTwelve =
+    (0x0000000000000000000000ff0000000000000000000000000000000000000000);
+uint256 constant MaskOverLastTwentyBytes =
+    (0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff);
+uint256 constant AddressDirtyUpperBitThreshold =
+    (0x0000000000000000000000010000000000000000000000000000000000000000);
+uint256 constant MaskOverFirstFourBytes =
+    (0xffffffff00000000000000000000000000000000000000000000000000000000);
 
-uint256 constant Conduit_execute_signature = (
-    0x4ce34aa200000000000000000000000000000000000000000000000000000000
-);
+uint256 constant Conduit_execute_signature =
+    (0x4ce34aa200000000000000000000000000000000000000000000000000000000);
 
 uint256 constant MaxUint8 = 0xff;
 uint256 constant MaxUint120 = 0xffffffffffffffffffffffffffffff;
@@ -503,15 +513,13 @@ uint256 constant Ecrecover_args_size = 0x80;
 uint256 constant Signature_lower_v = 27;
 
 // Bitmask that only gives a non-zero value if masked with a non-match selector.
-uint256 constant NonMatchSelector_MagicMask = (
-    0x4000000000000000000000000000000000000000000000000000000000
-);
+uint256 constant NonMatchSelector_MagicMask =
+    (0x4000000000000000000000000000000000000000000000000000000000);
 
 // First bit indicates that a NATIVE offer items has been used and the 231st bit
 // indicates that a non match selector has been called.
-uint256 constant NonMatchSelector_InvalidErrorValue = (
-    0x4000000000000000000000000000000000000000000000000000000001
-);
+uint256 constant NonMatchSelector_InvalidErrorValue =
+    (0x4000000000000000000000000000000000000000000000000000000001);
 
 /**
  * @dev Selector and offsets for generateOrder
@@ -530,7 +538,7 @@ uint256 constant generateOrder_minimumReceived_head_offset = 0x20;
 uint256 constant generateOrder_maximumSpent_head_offset = 0x40;
 uint256 constant generateOrder_context_head_offset = 0x60;
 uint256 constant generateOrder_base_tail_offset = 0x80;
-uint256 constant generateOrder_maximum_returndatasize = 0xffff;
+uint256 constant generateOrder_maximum_returned_array_length = 0xffff;
 
 uint256 constant ratifyOrder_selector = 0xf4dd92ce;
 uint256 constant ratifyOrder_selector_offset = 0x1c;
@@ -547,6 +555,11 @@ uint256 constant validateOrder_selector_offset = 0x1c;
 uint256 constant validateOrder_head_offset = 0x04;
 uint256 constant validateOrder_zoneParameters_offset = 0x20;
 
+uint256 constant authorizeOrder_selector = 0x01e4d72a;
+uint256 constant authorizeOrder_selector_offset = 0x1c;
+uint256 constant authorizeOrder_head_offset = 0x04;
+uint256 constant authorizeOrder_zoneParameters_offset = 0x20;
+
 // uint256 constant ZoneParameters_orderHash_offset = 0x00;
 uint256 constant ZoneParameters_fulfiller_offset = 0x20;
 uint256 constant ZoneParameters_offerer_offset = 0x40;
@@ -559,13 +572,12 @@ uint256 constant ZoneParameters_endTime_offset = 0x100;
 uint256 constant ZoneParameters_zoneHash_offset = 0x120;
 uint256 constant ZoneParameters_base_tail_offset = 0x140;
 uint256 constant ZoneParameters_selectorAndPointer_length = 0x24;
-uint256 constant ZoneParameters_basicOrderFixedElements_length = 0x64;
+uint256 constant ZoneParameters_basicOrderFixedElements_length = 0x44;
 
 // ConsiderationDecoder Constants
 uint256 constant OrderParameters_head_size = 0x0160;
-uint256 constant OrderParameters_totalOriginalConsiderationItems_offset = (
-    0x0140
-);
+uint256 constant OrderParameters_totalOriginalConsiderationItems_offset =
+    (0x0140);
 uint256 constant AdvancedOrderPlusOrderParameters_head_size = 0x0200;
 
 uint256 constant Order_signature_offset = 0x20;
