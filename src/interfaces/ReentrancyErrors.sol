@@ -12,4 +12,22 @@ interface ReentrancyErrors {
      *      function.
      */
     error NoReentrantCalls();
+
+    /**
+     * @dev Revert with an error when attempting to activate the TSTORE opcode
+     *      when it is already active.
+     */
+    error TStoreAlreadyActivated();
+
+    /**
+     * @dev Revert with an error when attempting to activate the TSTORE opcode
+     *      in an EVM environment that does not support it.
+     */  
+    error TStoreNotSupported();
+
+    /**
+     * @dev Revert with an error when deployment of the contract for testing
+     *      TSTORE support fails.
+     */
+    error TloadTestContractDeploymentFailed();
 }
