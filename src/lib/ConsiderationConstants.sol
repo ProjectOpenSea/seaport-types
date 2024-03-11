@@ -49,14 +49,16 @@ uint256 constant information_versionLengthPtr = 0x63;
 uint256 constant information_versionWithLength = 0x03312e36; // 1.6
 uint256 constant information_length = 0xa0;
 
-uint256 constant _REENTRANCY_GUARD_SLOT = 0x929eee14;
-uint256 constant _TSTORE_SUPPORTED_SLOT = 0x54778ab1;
 uint256 constant _TLOAD_TEST_PAYLOAD = 0x6002601e613d5c3d52f3;
 uint256 constant _TLOAD_TEST_PAYLOAD_LENGTH = 0x0a;
 uint256 constant _TLOAD_TEST_PAYLOAD_OFFSET = 0x16;
-uint256 constant _NOT_ENTERED = 0;
-uint256 constant _ENTERED = 1;
-uint256 constant _ENTERED_AND_ACCEPTING_NATIVE_TOKENS = 2;
+uint256 constant _NOT_ENTERED_TSTORE = 0;
+uint256 constant _ENTERED_TSTORE = 1;
+uint256 constant _ENTERED_AND_ACCEPTING_NATIVE_TOKENS_TSTORE = 2;
+uint256 constant _TSTORE_ENABLED_SSTORE = 0;
+uint256 constant _NOT_ENTERED_SSTORE = 1;
+uint256 constant _ENTERED_SSTORE = 2;
+uint256 constant _ENTERED_AND_ACCEPTING_NATIVE_TOKENS_SSTORE = 3;
 
 uint256 constant Offset_fulfillAdvancedOrder_criteriaResolvers = 0x20;
 uint256 constant Offset_fulfillAvailableOrders_offerFulfillments = 0x20;
@@ -312,7 +314,7 @@ uint256 constant OrderFulfilled_consideration_body_offset = 0x120;
  * 3 memory slots/words for `authorizeOrder` and `validateOrder` calldata
  * to be used for tails of extra data (length 0) and order hashes (length 1)
  */
-uint256 constant OrderFulfilled_post_memory_region_reservedBytes = 0x60; 
+uint256 constant OrderFulfilled_post_memory_region_reservedBytes = 0x60;
 
 /*
  * OrderFulfilled_offer_length_baseOffset - 12 * 0x20
@@ -326,9 +328,9 @@ uint256 constant OrderFulfilled_post_memory_region_reservedBytes = 0x60;
  * ptr - 0x0160 : ZoneParameter's struct head (0x20)
  * ptr - 0x0140 : order hash
  * ptr - 0x0120 : fulfiller (msg.sender)
- * ptr - 0x0100 : offerer 
+ * ptr - 0x0100 : offerer
  * ptr - 0x00e0 : spent items' head
- * ptr - 0x00c0 : received items' head 
+ * ptr - 0x00c0 : received items' head
  * ptr - 0x00a0 : extra data / context head
  * ptr - 0x0080 : order hashes head
  * ptr - 0x0060 : start time
@@ -340,7 +342,9 @@ uint256 constant OrderFulfilled_post_memory_region_reservedBytes = 0x60;
  * Note that the padded calldata selector will be at minimum at the
  * 0x80 memory slot.
  */
-uint256 constant authorizeOrder_calldata_baseOffset = OrderFulfilled_offer_length_baseOffset - 0x180;
+uint256 constant authorizeOrder_calldata_baseOffset = (
+    OrderFulfilled_offer_length_baseOffset - 0x180
+);
 
 // BasicOrderParameters
 uint256 constant BasicOrder_parameters_cdPtr = 0x04;
@@ -580,8 +584,9 @@ uint256 constant ZoneParameters_basicOrderFixedElements_length = 0x44;
 
 // ConsiderationDecoder Constants
 uint256 constant OrderParameters_head_size = 0x0160;
-uint256 constant OrderParameters_totalOriginalConsiderationItems_offset =
-    (0x0140);
+uint256 constant OrderParameters_totalOriginalConsiderationItems_offset = (
+    0x0140
+);
 uint256 constant AdvancedOrderPlusOrderParameters_head_size = 0x0200;
 
 uint256 constant Order_signature_offset = 0x20;
