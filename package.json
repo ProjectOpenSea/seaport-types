@@ -1,6 +1,6 @@
 {
   "name": "seaport-types",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Core types and interfaces for Seaport",
   "main": "src/",
   "repository": "https://github.com/ProjectOpenSea/seaport-types.git",

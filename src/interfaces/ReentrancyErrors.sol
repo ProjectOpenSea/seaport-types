@@ -22,7 +22,7 @@ interface ReentrancyErrors {
     /**
      * @dev Revert with an error when attempting to activate the TSTORE opcode
      *      in an EVM environment that does not support it.
-     */  
+     */
     error TStoreNotSupported();
 
     /**
