@@ -3,4 +3,13 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
-# See more config options https://github.com/foundry-rs/foundry/tree/master/config
+# src/ is compiled into the deployed Seaport 1.6 bytecode through seaport-core,
+# so its formatting stays as published. forge fmt and forge lint skip it.
+[fmt]
+ignore = ["src/**"]
+
+[lint]
+lint_on_build = false
+ignore = ["src/**"]
+
+# See more config options https://github.com/foundry-rs/foundry/tree/master/crates/config

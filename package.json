@@ -3,7 +3,10 @@
   "version": "1.6.3",
   "description": "Core types and interfaces for Seaport",
   "main": "src/",
-  "repository": "https://github.com/ProjectOpenSea/seaport-types.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ProjectOpenSea/seaport-types.git"
+  },
   "author": "OpenSea",
   "license": "MIT",
   "files": [

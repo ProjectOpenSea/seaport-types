@@ -1,4 +1,4 @@
-name: Auto-tag commit with YY-MM-DD/branchname
+name: Tag commit with YY-MM-DD-branch
 
 on:
   push:
@@ -6,32 +6,33 @@ on:
       - main
       - dev
 
-permissions:
-    contents: write
+# One tag push per branch at a time. Runs can still start out of order, so the
+# step below also skips any commit that is no longer the branch tip.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
-jobs: 
+permissions:
+  contents: read
+
+jobs:
   tag-commit:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # push the tag
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Get current date
-        run: echo "::set-output name=date::$(date +%y-%m-%d)"
-        id: date
-      - name: Get branch name
-        run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
-        id: branch
-      - name: Create tag string
-        run: echo "::set-output name=tag::${{ steps.date.outputs.date }}-${{ steps.branch.outputs.branch }}"
-        id: tag
-      - name: Delete tag if exists
+      # A second push to the branch on the same day moves the tag to the
+      # newer commit.
+      - name: Tag commit
         run: |
-          if git rev-parse --verify --quiet ${{ steps.tag.outputs.tag }}; then
-            git tag -d ${{ steps.tag.outputs.tag }}
-            git push --delete origin ${{ steps.tag.outputs.tag }}
+          tip="$(git ls-remote origin "refs/heads/${GITHUB_REF_NAME}" | cut -f1)"
+          if [ "$tip" != "$GITHUB_SHA" ]; then
+            echo "$GITHUB_SHA is no longer the tip of $GITHUB_REF_NAME ($tip); skipping."
+            exit 0
           fi
-      - name: Tag commit with YY-MM-DD-branchname
-        run: |
-          git tag ${{ steps.tag.outputs.tag }}
-          git push --tags --force 
+          tag="$(date -u +%y-%m-%d)-${GITHUB_REF_NAME}"
+          git tag --force "$tag"
+          git push --force origin "refs/tags/$tag"
