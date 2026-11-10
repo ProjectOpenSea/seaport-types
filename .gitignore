@@ -12,4 +12,8 @@ docs/
 
 # Dotenv file
 .env
-.*
+
+# Pinned lint tools from scripts/install-tools.sh
+.tools/
+
+.DS_Store
